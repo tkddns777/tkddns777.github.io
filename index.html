@@ -1,11 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>나의 첫 웹페이지</title>
+    <title>마우스 시냅스 효과</title>
+    <style>
+        /* CSS: 화면을 검게 만들고, 글자를 숨김 */
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <h1>안녕하세요!</h1>
-    <p>이것은 제가 처음 만든 HTML 문서입니다.</p>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        // JavaScript: 마우스 좌표를 가져오고 시냅스를 그리는 코드
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const dots = [];
+        const mouse = { x: null, y: null };
+
+        // 1. 마우스 움직임 감지
+        window.addEventListener('mousemove', function(event) {
+            mouse.x = event.x;
+            mouse.y = event.y;
+        });
+
+        // 2. 점(시냅스) 만들기
+        class Dot {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = (Math.random() - 0.5) * 1;
+                this.speedY = (Math.random() - 0.5) * 1;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            for (let i = 0; i < 100; i++) {
+                dots.push(new Dot());
+            }
+        }
+        init();
+
+        // 3. 점들을 선으로 연결하고 마우스와 상호작용
+        function handleDots() {
+            for (let i = 0; i < dots.length; i++) {
+                dots[i].update();
+                dots[i].draw();
+
+                for (let j = i; j < dots.length; j++) {
+                    const dx = dots[i].x - dots[j].x;
+                    const dy = dots[i].y - dots[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 100) {
+                        // 점들끼리 가깝다면 흰색 선
+                        ctx.strokeStyle = 'rgba(255,255,255,' + (1 - distance / 100) + ')';
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(dots[i].x, dots[i].y);
+                        ctx.lineTo(dots[j].x, dots[j].y);
+                        ctx.stroke();
+                    }
+                }
+
+                if (mouse.x) {
+                    const dxMouse = dots[i].x - mouse.x;
+                    const dyMouse = dots[i].y - mouse.y;
+                    const distanceMouse = Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse);
+                    if (distanceMouse < 150) {
+                        // 마우스와 가까운 점들은 전기신호처럼 더 굵은 파란색 선
+                        ctx.strokeStyle = 'rgba(0, 255, 255,' + (1 - distanceMouse / 150) + ')';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(dots[i].x, dots[i].y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            handleDots();
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
 </body>
 </html>
