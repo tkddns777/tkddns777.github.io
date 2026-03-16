@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain MRI AI - Medical AI Platform</title>
+    <style>
+        body {
+            margin: 0;
+            overflow-y: auto;
+            background-color: #050510;
+            color: white;
+            font-family: '맑은 고딕', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .content {
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-in-out forwards;
+            max-width: 700px;
+            padding: 40px 20px;
+        }
+
+        .icon { font-size: 4rem; margin-bottom: 10px; }
+
+        h1 {
+            font-size: 2.4rem;
+            margin-bottom: 16px;
+            text-shadow: 0 0 10px rgba(180, 100, 255, 0.7);
+        }
+
+        .desc {
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+
+        .tags {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .tag {
+            font-size: 0.8rem;
+            padding: 5px 14px;
+            background: rgba(180, 100, 255, 0.15);
+            border: 1px solid rgba(180, 100, 255, 0.3);
+            border-radius: 20px;
+            color: rgba(200, 160, 255, 0.9);
+        }
+
+        .launch-btn {
+            display: inline-block;
+            padding: 14px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3);
+        }
+
+        .launch-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(168, 85, 247, 0.5);
+        }
+
+        .nav-links {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .nav-link {
+            padding: 8px 18px;
+            background-color: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            border-color: cyan;
+            color: cyan;
+        }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="icon">&#x1F9E0;</div>
+        <h1>Brain MRI<br>Tumor Detection</h1>
+        <p class="desc">
+            뇌 MRI 영상에서 종양을 4가지 유형으로 분류합니다.<br>
+            Glioma, Meningioma, Pituitary, No Tumor<br>
+            Grad-CAM으로 뇌 활성화 영역을 매핑하고,<br>
+            감별 진단 확률 분석과 Gemini LLM 해석을 제공합니다.
+        </p>
+        <div class="tags">
+            <span class="tag">ResNet18</span>
+            <span class="tag">Grad-CAM</span>
+            <span class="tag">Differential Dx</span>
+            <span class="tag">Gemini LLM</span>
+            <span class="tag">4-Class</span>
+        </div>
+        <a class="launch-btn" href="https://huggingface.co/spaces/tkddns777/medical-ai-platform" target="_blank">
+            Launch AI Demo
+        </a>
+        <div class="nav-links">
+            <a href="medical-ai.html" class="nav-link">&larr; Medical AI</a>
+            <a href="index.html" class="nav-link">&larr; 메인</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>나의 뇌 신경망 메인 화면</title>
     <style>
         body {
@@ -9,9 +10,11 @@
             overflow: hidden;
             background-color: #050510;
         }
+
         canvas {
             display: block;
         }
+
         #info {
             position: absolute;
             top: 20px;
@@ -20,32 +23,35 @@
             font-family: '맑은 고딕', sans-serif;
             pointer-events: none;
         }
-        /* 화면이 부드럽게 넘어가는 암전 효과를 위한 막 */
+
         #fade-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-color: #050510;
-            opacity: 0; /* 처음엔 투명함 */
+            opacity: 0;
             pointer-events: none;
-            transition: opacity 0.8s ease-in-out; /* 0.8초 동안 부드럽게 변함 */
+            transition: opacity 0.8s ease-in-out;
             z-index: 999;
         }
     </style>
 </head>
 <body>
-    <div id="info">마우스를 올려 신호를 깨우고, 단어를 클릭해 보세요!</div>
     <canvas id="canvas"></canvas>
-    
+    <div id="info">마우스를 올려 신호를 깨우고, 단어를 클릭해 보세요!</div>
     <div id="fade-overlay"></div>
 
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        
+
         function resize() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
+
         window.addEventListener('resize', resize);
         resize();
 
@@ -56,58 +62,81 @@
             mouse.x = event.clientX;
             mouse.y = event.clientY;
         });
+
         window.addEventListener('mouseout', function() {
             mouse.x = -1000;
             mouse.y = -1000;
         });
 
-        // 클릭할 수 있는 브레인스토밍 주제들 (여기서 단어와 링크를 수정하세요!)
         const topics = [
             { text: "의료AI", url: "medical-ai.html" },
             { text: "빅데이터", url: "bigdata.html" },
             { text: "알고리즘", url: "algorithm.html" },
-            { text: "나의 목표", url: "goal.html" }
+            { text: "나의 목표", url: "goal.html" },
+            { text: "X-ray AI", url: "xray-ai.html", color: "medical" },
+            { text: "Brain MRI AI", url: "brain-mri-ai.html", color: "medical" },
+            { text: "Lung Sound AI", url: "lung-ai.html", color: "medical" }
         ];
 
         class Dot {
             constructor(x, y) {
-                this.baseX = x; this.baseY = y;
-                this.x = x; this.y = y;
+                this.baseX = x;
+                this.baseY = y;
+                this.x = x;
+                this.y = y;
                 this.angle = Math.random() * Math.PI * 2;
                 this.speed = Math.random() * 0.02 + 0.01;
-                this.radius = Math.random() * 15 + 5; 
-                this.pulse = 0; 
-                this.topic = null; // 특정 주제를 가진 점인지 확인
+                this.radius = Math.random() * 15 + 5;
+                this.pulse = 0;
+                this.topic = null;
             }
+
             update() {
                 this.angle += this.speed;
                 this.x = this.baseX + Math.cos(this.angle) * this.radius;
                 this.y = this.baseY + Math.sin(this.angle) * this.radius;
-                this.pulse *= 0.92; 
-                
+                this.pulse *= 0.92;
+
                 const dxMouse = this.x - mouse.x;
                 const dyMouse = this.y - mouse.y;
                 if (Math.sqrt(dxMouse * dxMouse + dyMouse * dyMouse) < 80) {
                     this.pulse = 1;
                 }
             }
+
             draw() {
                 const brightness = Math.floor(this.pulse * 255);
-                
-                // 단어가 있는 점은 더 눈에 띄게 (노란색 빛)
-                if (this.topic) {
-                    ctx.fillStyle = `rgb(255, ${200 + brightness*55}, ${brightness})`;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, 4 + this.pulse * 3, 0, Math.PI * 2);
-                    ctx.fill();
 
-                    // 글씨 그리기
-                    ctx.fillStyle = `rgba(255, 255, 255, ${0.7 + this.pulse*0.3})`;
-                    ctx.font = "bold 18px '맑은 고딕', sans-serif";
-                    ctx.textAlign = "center";
-                    ctx.fillText(this.topic.text, this.x, this.y - 15);
+                if (this.topic) {
+                    if (this.topic.color === "medical") {
+                        ctx.fillStyle = `rgb(${200 + brightness*55/255}, ${100 + brightness}, 255)`;
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, 5 + this.pulse * 3, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        if (this.pulse > 0.01) {
+                            ctx.beginPath();
+                            ctx.arc(this.x, this.y, 8 + this.pulse * 8, 0, Math.PI * 2);
+                            ctx.fillStyle = `rgba(180, 100, 255, ${this.pulse * 0.15})`;
+                            ctx.fill();
+                        }
+
+                        ctx.fillStyle = `rgba(220, 180, 255, ${0.7 + this.pulse*0.3})`;
+                        ctx.font = "bold 16px '맑은 고딕', sans-serif";
+                        ctx.textAlign = "center";
+                        ctx.fillText(this.topic.text, this.x, this.y - 16);
+                    } else {
+                        ctx.fillStyle = `rgb(255, ${200 + brightness*55/255}, ${brightness})`;
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, 4 + this.pulse * 3, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        ctx.fillStyle = `rgba(255, 255, 255, ${0.7 + this.pulse*0.3})`;
+                        ctx.font = "bold 18px '맑은 고딕', sans-serif";
+                        ctx.textAlign = "center";
+                        ctx.fillText(this.topic.text, this.x, this.y - 15);
+                    }
                 } else {
-                    // 일반 점
                     ctx.fillStyle = `rgb(${brightness}, ${100 + brightness}, 255)`;
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, 1.5 + this.pulse * 2, 0, Math.PI * 2);
@@ -117,12 +146,12 @@
         }
 
         function createBrainNetwork() {
-            dots.length = 0; 
+            dots.length = 0;
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const brainSize = Math.min(canvas.width, canvas.height) * 0.35;
-
             let attempts = 0;
+
             while(dots.length < 400 && attempts < 4000) {
                 attempts++;
                 const rx = Math.random() * canvas.width;
@@ -131,48 +160,56 @@
                 const dyLeft = ry - centerY;
                 const dxRight = rx - (centerX + brainSize * 0.4);
                 const dyRight = ry - centerY;
-                const a = brainSize * 0.55; 
-                const b = brainSize * 0.8;  
-                if ((dxLeft*dxLeft)/(a*a) + (dyLeft*dyLeft)/(b*b) <= 1 || 
-                    (dxRight*dxRight)/(a*a) + (dyRight*dyRight)/(b*b) <= 1) {
+                const a = brainSize * 0.55;
+                const b = brainSize * 0.8;
+
+                if ((dxLeft*dxLeft)/(a*a) + (dyLeft*dyLeft)/(b*b) <= 1 || (dxRight*dxRight)/(a*a) + (dyRight*dyRight)/(b*b) <= 1) {
                     dots.push(new Dot(rx, ry));
                 }
             }
 
-            // 생성된 점들 중 랜덤으로 몇 개를 골라 '주제(단어)' 부여하기
             let shuffledDots = [...dots].sort(() => 0.5 - Math.random());
             for(let i = 0; i < topics.length; i++) {
                 if(shuffledDots[i]) {
                     shuffledDots[i].topic = topics[i];
-                    shuffledDots[i].radius = 5; // 단어 점은 덜 움직이게 고정
+                    shuffledDots[i].radius = 5;
                 }
             }
         }
+
         createBrainNetwork();
 
         function handleNetwork() {
             for (let i = 0; i < dots.length; i++) {
                 dots[i].update();
                 dots[i].draw();
+
                 for (let j = i + 1; j < dots.length; j++) {
                     const dx = dots[i].x - dots[j].x;
                     const dy = dots[i].y - dots[j].y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
+
                     if (distance < 50) {
                         if (dots[i].pulse > 0.1 && dots[j].pulse < dots[i].pulse) {
                             dots[j].pulse += (dots[i].pulse - dots[j].pulse) * 0.15;
                         } else if (dots[j].pulse > 0.1 && dots[i].pulse < dots[j].pulse) {
                             dots[i].pulse += (dots[j].pulse - dots[i].pulse) * 0.15;
                         }
+
                         const avgPulse = (dots[i].pulse + dots[j].pulse) / 2;
-                        const alpha = 0.05 + avgPulse * 0.8; 
-                        
-                        // 단어가 연결된 선은 약간 다른 색으로
-                        if(dots[i].topic || dots[j].topic) {
+                        const alpha = 0.05 + avgPulse * 0.8;
+
+                        const iMed = dots[i].topic && dots[i].topic.color === "medical";
+                        const jMed = dots[j].topic && dots[j].topic.color === "medical";
+
+                        if (iMed || jMed) {
+                            ctx.strokeStyle = `rgba(180, 100, 255, ${alpha})`;
+                        } else if(dots[i].topic || dots[j].topic) {
                             ctx.strokeStyle = `rgba(255, 200, 0, ${alpha})`;
                         } else {
                             ctx.strokeStyle = `rgba(0, 255, 255, ${alpha})`;
                         }
+
                         ctx.lineWidth = 0.5 + avgPulse * 2;
                         ctx.beginPath();
                         ctx.moveTo(dots[i].x, dots[i].y);
@@ -189,42 +226,33 @@
             handleNetwork();
             requestAnimationFrame(animate);
         }
+
         animate();
-        
-        // 창 크기가 바뀌면 다시 그리기
+
         window.addEventListener('resize', createBrainNetwork);
 
-        // ★ 마우스 클릭 시 부드럽게 페이지 이동하는 기능 ★
         canvas.addEventListener('click', function(e) {
             const clickX = e.clientX;
             const clickY = e.clientY;
 
-            // 모든 점을 검사해서 클릭한 위치 주변에 단어가 있는지 확인
             for(let i = 0; i < dots.length; i++) {
                 if(dots[i].topic) {
                     const dx = dots[i].x - clickX;
                     const dy = dots[i].y - clickY;
                     const distance = Math.sqrt(dx*dx + dy*dy);
-                    
-                    // 단어 주변(반경 40픽셀 안)을 클릭했다면?
+
                     if(distance < 40) {
                         const targetUrl = dots[i].topic.url;
-                        
-                        // 1. 화면을 부드럽게 검게 만듦 (CSS 클래스 적용)
                         document.getElementById('fade-overlay').style.opacity = '1';
-                        
-                        // 2. 0.8초(800ms) 뒤에 실제로 페이지를 이동시킴
                         setTimeout(function() {
                             window.location.href = targetUrl;
                         }, 800);
-                        
-                        break; // 하나 찾았으면 더 이상 찾지 않음
+                        break;
                     }
                 }
             }
         });
-        
-        // 마우스 커서 모양 바꾸기 (단어 위에 올라가면 손가락 모양으로)
+
         canvas.addEventListener('mousemove', function(e) {
             let hovering = false;
             for(let i = 0; i < dots.length; i++) {
